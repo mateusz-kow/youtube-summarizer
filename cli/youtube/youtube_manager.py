@@ -1,7 +1,6 @@
 import yt_dlp
 import glob
 from cli.youtube.utils import get_raw_text_from_srt
-import subprocess
 import os
 import tempfile
 import logging
@@ -28,57 +27,45 @@ def get_video_subtitles(youtube_url: str) -> str | None:
                 return matches[0]
             return None
 
-        # Try official subtitles first
-        logger.info("Attempting to download official English subtitles...")
-        result = subprocess.run([
-            "yt-dlp",
-            "--write-sub",
-            "--sub-langs", "en.*",
-            "--sub-format", "srt",
-            "--skip-download",
-            "-o", base_path,
-            youtube_url
-        ], capture_output=True, text=True)
-
-        if result.returncode != 0:
-            logger.warning(f"yt-dlp exited with code {result.returncode} when downloading official subtitles.")
-            logger.debug(f"yt-dlp stderr: {result.stderr.strip()}")
-
-        subs_file = find_srt_file()
-
-        # Try auto-generated if no official subs
-        if subs_file is None:
-            logger.info("Official subtitles not found. Trying auto-generated subtitles...")
-            result = subprocess.run([
-                "yt-dlp",
-                "--write-auto-sub",
-                "--sub-langs", "en.*",
-                "--sub-format", "srt",
-                "--skip-download",
-                "-o", base_path,
-                youtube_url
-            ], capture_output=True, text=True)
-
-            if result.returncode != 0:
-                logger.warning(f"yt-dlp exited with code {result.returncode} when downloading auto subtitles.")
-                logger.debug(f"yt-dlp stderr: {result.stderr.strip()}")
-
-            subs_file = find_srt_file()
-
-        if subs_file is None:
-            logger.info("No subtitles found.")
-            return None
+        ydl_opts = {
+            'quiet': True,
+            'no_warnings': True,
+            'writesubtitles': True,
+            'subtitleslangs': ['en.*'],  # Match all English variants
+            'subtitlesformat': 'srt',
+            'skip_download': True,
+            'outtmpl': f"{base_path}.%(ext)s",
+        }
 
         try:
-            with open(subs_file, "r", encoding="utf-8") as f:
-                content = f.read()
-                logger.info(f"Successfully read subtitles from {subs_file} (size: {len(content)} characters).")
-                logger.debug(content)
-                return get_raw_text_from_srt(content)
-        except Exception as e:
-            logger.error(f"Failed to read subtitles file {subs_file}: {e}")
-            return None
+            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                # Attempt to download official subtitles
+                logger.info("Attempting to download official English subtitles...")
+                ydl.download([youtube_url])
 
+                subs_file = find_srt_file()
+
+                # Try auto-generated subtitles if no official subtitles are found
+                if subs_file is None:
+                    logger.info("Official subtitles not found. Trying auto-generated subtitles...")
+                    ydl_opts['writeautomaticsub'] = True
+                    with yt_dlp.YoutubeDL(ydl_opts) as ydl_auto:
+                        ydl_auto.download([youtube_url])
+                        subs_file = find_srt_file()
+
+                if subs_file is None:
+                    logger.info("No subtitles found.")
+                    return None
+
+                with open(subs_file, "r", encoding="utf-8") as f:
+                    content = f.read()
+                    logger.info(f"Successfully read subtitles from {subs_file} (size: {len(content)} characters).")
+                    logger.debug(content)
+                    return get_raw_text_from_srt(content)
+
+        except Exception as e:
+            logger.error(f"Error downloading subtitles for {youtube_url}: {e}")
+            return None
 
 def get_video_name(url: str) -> str:
     """
