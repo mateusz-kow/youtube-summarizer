@@ -11,11 +11,11 @@ logger = logging.getLogger(__name__)
 
 
 class Gemini(LLM):
-    def __init__(self, max_tokens: int = 6000):
+    def __init__(self, max_tokens: int = int(os.getenv("GOOGLE_LLM_MAX_INPUT_TOKENS", 6000))):
         super().__init__(logger)
         self._max_tokens = max_tokens
         self._client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
-        self._model_name = "gemma-3n-e4b-it"
+        self._model_name = os.getenv("GOOGLE_MODEL_NAME", "gemma-3n-e4b-it")
         logger.info(f"Gemini initialized with max token limit: {self._max_tokens}")
 
     def ask(self, prompt: str, max_retries: int = 5, backoff_seconds: int = 30) -> str:
