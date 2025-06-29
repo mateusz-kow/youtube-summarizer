@@ -58,11 +58,12 @@ class LLM(ABC):
         """
         pass
 
-    def _estimate_token_count(self, text: str) -> int:
+    @staticmethod
+    def _estimate_token_count(text: str) -> int:
         """
         Estimates token count heuristically as length of text divided by 4.
         """
-        return self.get_token_count(text)
+        return max(len(text) // 4, 1)
 
     @abstractmethod
     def get_token_limit(self) -> int:

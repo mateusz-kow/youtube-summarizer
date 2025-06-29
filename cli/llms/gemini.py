@@ -52,12 +52,6 @@ class Gemini(LLM):
             logger.warning(f"Token counting API failed: {e}. Falling back to heuristic.")
             return self._estimate_token_count(text)
 
-    def _estimate_token_count(self, text: str) -> int:
-        """
-        Estimates token count heuristically as length of text divided by 4.
-        """
-        return max(len(text) // 4, 1)
-
     def get_token_limit(self) -> int:
         """
         Returns the maximum allowed tokens for input prompt.
