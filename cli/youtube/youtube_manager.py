@@ -1,0 +1,119 @@
+import yt_dlp
+import glob
+from cli.youtube.utils import get_raw_text_from_srt
+import subprocess
+import os
+import tempfile
+import logging
+
+
+logger = logging.getLogger(__name__)
+
+
+def get_video_subtitles(youtube_url: str) -> str | None:
+    """
+    Downloads English subtitles or auto-generated English subtitles (including en variants like en-GB, en-US)
+    from a YouTube video URL. Returns the subtitle content as a string, or None if no subtitles are available.
+    """
+
+    logger.info(f"Starting subtitle download for URL: {youtube_url}")
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        base_path = os.path.join(tmpdir, "subs")
+
+        def find_srt_file() -> str | None:
+            matches = glob.glob(os.path.join(tmpdir, "subs.en*.srt"))
+            if matches:
+                logger.info(f"Found subtitle file: {matches[0]}")
+                return matches[0]
+            return None
+
+        # Try official subtitles first
+        logger.info("Attempting to download official English subtitles...")
+        result = subprocess.run([
+            "yt-dlp",
+            "--write-sub",
+            "--sub-langs", "en.*",
+            "--sub-format", "srt",
+            "--skip-download",
+            "-o", base_path,
+            youtube_url
+        ], capture_output=True, text=True)
+
+        if result.returncode != 0:
+            logger.warning(f"yt-dlp exited with code {result.returncode} when downloading official subtitles.")
+            logger.debug(f"yt-dlp stderr: {result.stderr.strip()}")
+
+        subs_file = find_srt_file()
+
+        # Try auto-generated if no official subs
+        if subs_file is None:
+            logger.info("Official subtitles not found. Trying auto-generated subtitles...")
+            result = subprocess.run([
+                "yt-dlp",
+                "--write-auto-sub",
+                "--sub-langs", "en.*",
+                "--sub-format", "srt",
+                "--skip-download",
+                "-o", base_path,
+                youtube_url
+            ], capture_output=True, text=True)
+
+            if result.returncode != 0:
+                logger.warning(f"yt-dlp exited with code {result.returncode} when downloading auto subtitles.")
+                logger.debug(f"yt-dlp stderr: {result.stderr.strip()}")
+
+            subs_file = find_srt_file()
+
+        if subs_file is None:
+            logger.info("No subtitles found.")
+            return None
+
+        try:
+            with open(subs_file, "r", encoding="utf-8") as f:
+                content = f.read()
+                logger.info(f"Successfully read subtitles from {subs_file} (size: {len(content)} characters).")
+                logger.debug(content)
+                return get_raw_text_from_srt(content)
+        except Exception as e:
+            logger.error(f"Failed to read subtitles file {subs_file}: {e}")
+            return None
+
+
+def get_video_name(url: str) -> str:
+    """
+    Retrieves the title of a YouTube video without downloading the content.
+    :param url: URL of the YouTube video
+    :return: Title of the video as a string
+    """
+    logger.info(f"Fetching video title for URL: {url}")
+
+    class QuietLogger:
+        """Custom logger to suppress yt-dlp output."""
+
+        def debug(self, msg): pass
+
+        def warning(self, msg): pass
+
+        def error(self, msg): pass
+
+    ydl_opts = {
+        'quiet': True,
+        'no_warnings': True,
+        'ignoreerrors': True,
+        'nocheckcertificate': True,
+        'logger': QuietLogger(),  # Suppress yt-dlp logs
+    }
+
+    try:
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            info_dict = ydl.extract_info(url, download=False)
+            if info_dict is None:
+                raise RuntimeError(f"Could not extract video info for URL: {url}")
+            title = info_dict.get('title')
+            if not title:
+                raise ValueError(f"No title found in video metadata for URL: {url}")
+            logger.info(f"Retrieved video title: {title}")
+            return title
+    except Exception as e:
+        raise RuntimeError(f"Error fetching video title for {url}: {e}") from e
