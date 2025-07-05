@@ -13,7 +13,7 @@ def chunk_text(
     get_token_count: Callable,
     max_tokens: int,
     generate_prompt: Callable,
-    estimate_token_count: Callable
+    estimate_token_count: Callable,
 ) -> list[str]:
     """
     Splits text into chunks using nltk sentence tokenizer,
@@ -73,7 +73,7 @@ def chunk_text(
                 get_token_count=get_token_count,
                 max_tokens=max_tokens,
                 generate_prompt=generate_prompt,
-                estimate_token_count=estimate_token_count
+                estimate_token_count=estimate_token_count,
             )
             final_chunks.extend(sub_chunks)
         else:

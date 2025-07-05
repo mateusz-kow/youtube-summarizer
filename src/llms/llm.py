@@ -30,7 +30,7 @@ class LLM(ABC):
             get_token_count=self.get_token_count,
             max_tokens=self.get_token_limit(),
             generate_prompt=prompt_generator,
-            estimate_token_count=self._estimate_token_count
+            estimate_token_count=self._estimate_token_count,
         )
 
         self._logger.debug(f"Text split into {len(chunks)} chunks for summarization.")
