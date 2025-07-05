@@ -29,7 +29,7 @@ jobs:
       - name: Lint with Ruff
         run: |
           pip install ruff
-          ruff .
+          ruff check .
 
       # Optional: Check formatting with Black
       - name: Check formatting with Black
