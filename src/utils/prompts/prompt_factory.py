@@ -1,11 +1,11 @@
-from enum import Enum
+from enum import IntEnum, auto
 from typing import Callable
 
-from cli.utils.prompts.prompt_generators import generate_summary_prompt
+from src.utils.prompts.prompt_generators import generate_summary_prompt
 
 
-class Prompt(Enum):
-    SUMMARY = "sum"
+class Prompt(IntEnum):
+    SUMMARY = auto()
 
 
 PROMPT_TO_GENERATOR: dict[Prompt, Callable] = {

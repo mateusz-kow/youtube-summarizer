@@ -2,8 +2,8 @@ from logging import Logger
 from abc import ABC, abstractmethod
 from concurrent.futures import ThreadPoolExecutor
 
-from cli.utils.prompts.prompt_factory import Prompt, get_prompt_generator
-from cli.llms.utils import chunk_text
+from src.utils.prompts.prompt_factory import Prompt, get_prompt_generator
+from src.llms.utils import chunk_text
 
 
 class LLM(ABC):
