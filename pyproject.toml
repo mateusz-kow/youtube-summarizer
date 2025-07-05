@@ -1,0 +1,37 @@
+[tool.poetry]
+name = "youtube-summarizer"
+version = "0.1.0"
+description = "Generate an AI-powered summary of a YouTube video using its subtitles."
+authors = ["mateusz_kow ytsum+kowalski.mateusz.1lo1@gmail.com"]
+readme = "README.md"
+packages = [{include = "ytsum"}]
+
+[tool.poetry.scripts]
+ytsum = "ytsum.__main__:main"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+yt-dlp = "~2025.6.9"
+google-genai = "~1.20"
+python-dotenv = "~1.1.0"
+platformdirs = "~4.3.8"
+nltk = ">=3.8.1"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "*"
+ruff = "*"
+black = "*"
+mypy = "*"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+line-length = 88
+
+[tool.black]
+line-length = 88
+
+[tool.mypy]
+ignore_missing_imports = true
