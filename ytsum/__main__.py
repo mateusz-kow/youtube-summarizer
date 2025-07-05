@@ -1,11 +1,11 @@
 import logging
 import sys
 
-from src import APP_NAME, OUTPUT_DIR
-from src.llms.gemini import Gemini
-from src.youtube.youtube_manager import get_video_subtitles, get_video_name
-from src.utils.input_parser import get_args
-from src.utils.prompts.prompt_factory import Prompt
+from ytsum import APP_NAME, OUTPUT_DIR
+from ytsum.llms.gemini import Gemini
+from ytsum.youtube.youtube_manager import get_video_subtitles, get_video_name
+from ytsum.utils.input_parser import get_args
+from ytsum.utils.prompts.prompt_factory import Prompt
 
 import re
 import os

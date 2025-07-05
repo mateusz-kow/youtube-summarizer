@@ -5,7 +5,7 @@ import time
 from google import genai
 from google.genai.errors import ClientError
 
-from src.llms.llm import LLM
+from ytsum.llms.llm import LLM
 
 logger = logging.getLogger(__name__)
 

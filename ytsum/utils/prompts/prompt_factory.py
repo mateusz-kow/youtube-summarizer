@@ -1,7 +1,7 @@
 from enum import IntEnum, auto
 from typing import Callable
 
-from src.utils.prompts.prompt_generators import generate_summary_prompt
+from ytsum.utils.prompts.prompt_generators import generate_summary_prompt
 
 
 class Prompt(IntEnum):

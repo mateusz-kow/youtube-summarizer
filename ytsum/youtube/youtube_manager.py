@@ -1,6 +1,6 @@
 import yt_dlp
 import glob
-from src.youtube.utils import get_raw_text_from_srt
+from ytsum.youtube.utils import get_raw_text_from_srt
 import os
 import tempfile
 import logging

@@ -1,8 +1,8 @@
 # tests/utils/prompts/test_prompt_factory.py
 
 import pytest
-from src.utils.prompts.prompt_factory import Prompt, get_prompt_generator
-from src.utils.prompts.prompt_generators import generate_summary_prompt
+from ytsum.utils.prompts.prompt_factory import Prompt, get_prompt_generator
+from ytsum.utils.prompts.prompt_generators import generate_summary_prompt
 
 
 def test_get_prompt_generator_summary():
