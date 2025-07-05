@@ -17,6 +17,9 @@ OUTPUT_DIR = os.path.join(APP_DIR, "Output")
 
 KEY_DIRS = (APP_DIR, OUTPUT_DIR, LOG_DIR)
 
+for directory in KEY_DIRS:
+    os.makedirs(directory, exist_ok=True)
+
 LOG_PATH = os.path.join(
     LOG_DIR,
     f"{datetime.now().date()}.log"
@@ -51,9 +54,3 @@ logging.basicConfig(
 )
 
 logger = logging.getLogger()
-
-for directory in KEY_DIRS:
-    logger.debug(f"Creating directory {directory}")
-    os.makedirs(directory, exist_ok=True)
-
-logger.info(f"All key directories created: {KEY_DIRS}")
