@@ -20,19 +20,15 @@ KEY_DIRS = (APP_DIR, OUTPUT_DIR, LOG_DIR)
 for directory in KEY_DIRS:
     os.makedirs(directory, exist_ok=True)
 
-LOG_PATH = os.path.join(
-    LOG_DIR,
-    f"{datetime.now().date()}.log"
-)
+LOG_PATH = os.path.join(LOG_DIR, f"{datetime.now().date()}.log")
 
 # Common formatter for file logs
 file_formatter = logging.Formatter(
-    fmt="%(asctime)s | %(levelname)s | %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S"
+    fmt="%(asctime)s | %(levelname)s | %(message)s", datefmt="%Y-%m-%d %H:%M:%S"
 )
 
 # File handler
-file_handler = logging.FileHandler(LOG_PATH, encoding="utf-8", mode='a')
+file_handler = logging.FileHandler(LOG_PATH, encoding="utf-8", mode="a")
 file_handler.setLevel(logging.DEBUG)  # File handler logs DEBUG and above
 file_handler.setFormatter(file_formatter)
 

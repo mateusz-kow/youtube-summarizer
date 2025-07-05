@@ -25,23 +25,23 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # Step 4: Lint with Ruff or Flake8
-#      - name: Lint with Ruff
-#        run: |
-#          pip install ruff
-#          ruff .
+      # Step 4: Lint with Ruff
+      - name: Lint with Ruff
+        run: |
+          pip install ruff
+          ruff .
 
       # Optional: Check formatting with Black
-#      - name: Check formatting with Black
-#        run: |
-#          pip install black
-#          black --check .
+      - name: Check formatting with Black
+        run: |
+          pip install black
+          black --check .
 
       # Step 5: Static Type Checking with mypy
-#      - name: Static type checking with mypy
-#        run: |
-#          pip install mypy
-#          mypy .
+      - name: Static type checking with mypy
+        run: |
+          pip install mypy
+          mypy .
 
       # Step 6: Run Tests with pytest
       - name: Run tests with pytest

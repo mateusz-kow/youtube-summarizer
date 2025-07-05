@@ -38,14 +38,14 @@ try:
     text = get_video_subtitles(video_url)
     if not text:
         raise RuntimeError(f"Failed to get subtitles from video {video_url}")
-    with open(os.path.join(output_dir, "text.md"), 'w', encoding="utf-8") as file:
+    with open(os.path.join(output_dir, "text.md"), "w", encoding="utf-8") as file:
         file.write(text + f"\n\nOriginal video: [**{name}**]({video_url})")
     logger.info(f"Text saved to {output_dir}{os.sep}text.md")
 
     llm = Gemini()
     summary = llm.ask_prompt(Prompt.SUMMARY, text)
     adjusted_summary = summary + f"\n\nOriginal video: [**{name}**]({video_url})\n"
-    with open(os.path.join(output_dir, "summary.md"), 'w', encoding="utf-8") as file:
+    with open(os.path.join(output_dir, "summary.md"), "w", encoding="utf-8") as file:
         file.write(adjusted_summary)
     logger.info(f"Summary saved to {output_dir}{os.sep}summary.md")
 

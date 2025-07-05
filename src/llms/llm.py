@@ -25,21 +25,22 @@ class LLM(ABC):
         if total_tokens <= self.get_token_limit():
             return self.ask(prompt)
 
-        chunks = chunk_text(text=text,
-                            get_token_count=self.get_token_count,
-                            max_tokens=self.get_token_limit(),
-                            generate_prompt=prompt_generator,
-                            estimate_token_count=self._estimate_token_count,
-                            *args)
+        chunks = chunk_text(
+            text=text,
+            get_token_count=self.get_token_count,
+            max_tokens=self.get_token_limit(),
+            generate_prompt=prompt_generator,
+            estimate_token_count=self._estimate_token_count
+        )
 
         self._logger.debug(f"Text split into {len(chunks)} chunks for summarization.")
 
         answers = []
         with ThreadPoolExecutor(max_workers=4) as executor:
-            futures = [executor.submit(self.ask,
-                                       prompt_generator(chunk, *args),
-                                       5,
-                                       30) for chunk in chunks]
+            futures = [
+                executor.submit(self.ask, prompt_generator(chunk, *args), 5, 30)
+                for chunk in chunks
+            ]
             for future in futures:
                 answers.append(future.result())
 
