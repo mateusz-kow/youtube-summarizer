@@ -28,13 +28,13 @@ def get_video_subtitles(youtube_url: str) -> str | None:
             return None
 
         ydl_opts = {
-            'quiet': True,
-            'no_warnings': True,
-            'writesubtitles': True,
-            'subtitleslangs': ['en.*'],  # Match all English variants
-            'subtitlesformat': 'srt',
-            'skip_download': True,
-            'outtmpl': f"{base_path}.%(ext)s",
+            "quiet": True,
+            "no_warnings": True,
+            "writesubtitles": True,
+            "subtitleslangs": ["en.*"],  # Match all English variants
+            "subtitlesformat": "srt",
+            "skip_download": True,
+            "outtmpl": f"{base_path}.%(ext)s",
         }
 
         try:
@@ -47,8 +47,10 @@ def get_video_subtitles(youtube_url: str) -> str | None:
 
                 # Try auto-generated subtitles if no official subtitles are found
                 if subs_file is None:
-                    logger.info("Official subtitles not found. Trying auto-generated subtitles...")
-                    ydl_opts['writeautomaticsub'] = True
+                    logger.info(
+                        "Official subtitles not found. Trying auto-generated subtitles..."
+                    )
+                    ydl_opts["writeautomaticsub"] = True
                     with yt_dlp.YoutubeDL(ydl_opts) as ydl_auto:
                         ydl_auto.download([youtube_url])
                         subs_file = find_srt_file()
@@ -59,13 +61,16 @@ def get_video_subtitles(youtube_url: str) -> str | None:
 
                 with open(subs_file, "r", encoding="utf-8") as f:
                     content = f.read()
-                    logger.info(f"Successfully read subtitles from {subs_file} (size: {len(content)} characters).")
+                    logger.info(
+                        f"Successfully read subtitles from {subs_file} (size: {len(content)} characters)."
+                    )
                     logger.debug(content)
                     return get_raw_text_from_srt(content)
 
         except Exception as e:
             logger.error(f"Error downloading subtitles for {youtube_url}: {e}")
             return None
+
 
 def get_video_name(url: str) -> str:
     """
@@ -78,18 +83,21 @@ def get_video_name(url: str) -> str:
     class QuietLogger:
         """Custom logger to suppress yt-dlp output."""
 
-        def debug(self, msg): pass
+        def debug(self, msg):
+            pass
 
-        def warning(self, msg): pass
+        def warning(self, msg):
+            pass
 
-        def error(self, msg): pass
+        def error(self, msg):
+            pass
 
     ydl_opts = {
-        'quiet': True,
-        'no_warnings': True,
-        'ignoreerrors': True,
-        'nocheckcertificate': True,
-        'logger': QuietLogger(),  # Suppress yt-dlp logs
+        "quiet": True,
+        "no_warnings": True,
+        "ignoreerrors": True,
+        "nocheckcertificate": True,
+        "logger": QuietLogger(),  # Suppress yt-dlp logs
     }
 
     try:
@@ -97,7 +105,7 @@ def get_video_name(url: str) -> str:
             info_dict = ydl.extract_info(url, download=False)
             if info_dict is None:
                 raise RuntimeError(f"Could not extract video info for URL: {url}")
-            title = info_dict.get('title')
+            title = info_dict.get("title")
             if not title:
                 raise ValueError(f"No title found in video metadata for URL: {url}")
             logger.info(f"Retrieved video title: {title}")

@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [master]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout Code
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # Step 2: Set up Python
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      # Step 3: Install Dependencies
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # Step 4: Lint with Ruff
+      - name: Lint with Ruff
+        run: |
+          pip install ruff
+          ruff check .
+
+      # Optional: Check formatting with Black
+      - name: Check formatting with Black
+        run: |
+          pip install black
+          black --check .
+
+      # Step 5: Static Type Checking with mypy
+      - name: Static type checking with mypy
+        run: |
+          pip install mypy
+          mypy .
+
+      # Step 6: Run Tests with pytest
+      - name: Run tests with pytest
+        run: |
+          pip install pytest
+          pytest

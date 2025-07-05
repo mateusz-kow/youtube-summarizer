@@ -17,19 +17,18 @@ OUTPUT_DIR = os.path.join(APP_DIR, "Output")
 
 KEY_DIRS = (APP_DIR, OUTPUT_DIR, LOG_DIR)
 
-LOG_PATH = os.path.join(
-    LOG_DIR,
-    f"{datetime.now().date()}.log"
-)
+for directory in KEY_DIRS:
+    os.makedirs(directory, exist_ok=True)
+
+LOG_PATH = os.path.join(LOG_DIR, f"{datetime.now().date()}.log")
 
 # Common formatter for file logs
 file_formatter = logging.Formatter(
-    fmt="%(asctime)s | %(levelname)s | %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S"
+    fmt="%(asctime)s | %(levelname)s | %(message)s", datefmt="%Y-%m-%d %H:%M:%S"
 )
 
 # File handler
-file_handler = logging.FileHandler(LOG_PATH, encoding="utf-8", mode='a')
+file_handler = logging.FileHandler(LOG_PATH, encoding="utf-8", mode="a")
 file_handler.setLevel(logging.DEBUG)  # File handler logs DEBUG and above
 file_handler.setFormatter(file_formatter)
 
@@ -51,9 +50,3 @@ logging.basicConfig(
 )
 
 logger = logging.getLogger()
-
-for directory in KEY_DIRS:
-    logger.debug(f"Creating directory {directory}")
-    os.makedirs(directory, exist_ok=True)
-
-logger.info(f"All key directories created: {KEY_DIRS}")

@@ -23,10 +23,7 @@ def get_raw_text_from_srt(srt_subs: str) -> str:
             continue
 
         text_lines = [line for line in parts[2:] if line.strip()]
-        cleaned = [
-            re.sub(r"\[.*?]", "", line).strip()
-            for line in text_lines
-        ]
+        cleaned = [re.sub(r"\[.*?]", "", line).strip() for line in text_lines]
 
         block_text = " ".join(filter(None, cleaned))
         if block_text:

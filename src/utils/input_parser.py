@@ -14,11 +14,7 @@ def get_args():
         description="Generate an AI-powered summary of a YouTube video"
     )
 
-    parser.add_argument(
-        "--url",
-        type=str,
-        help="URL of the YouTube video to summarize"
-    )
+    parser.add_argument("--url", type=str, help="URL of the YouTube video to summarize")
 
     args = parser.parse_args()
 
