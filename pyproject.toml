@@ -2,9 +2,12 @@
 name = "youtube-summarizer"
 version = "0.1.0"
 description = "Generate an AI-powered summary of a YouTube video using its subtitles."
-authors = ["mateusz_kow mail@example.com"]
+authors = ["mateusz_kow ytsum+kowalski.mateusz.1lo1@gmail.com"]
 readme = "README.md"
 packages = [{include = "ytsum"}]
+
+[tool.poetry.scripts]
+ytsum = "ytsum.__main__:main"
 
 [tool.poetry.dependencies]
 python = "^3.11"

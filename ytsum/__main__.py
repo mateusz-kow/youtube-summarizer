@@ -25,32 +25,39 @@ def sanitize_filename(name: str, replacement: str = "") -> str:
     return name[:255]
 
 
-logger = logging.getLogger(__name__)
-logger.info(f"Starting {APP_NAME}")
+def main() -> None:
+    logger = logging.getLogger(__name__)
+    logger.info(f"Starting {APP_NAME}")
 
-try:
-    video_url = get_args()
+    try:
+        video_url = get_args()
 
-    name = get_video_name(video_url)
-    output_dir = os.path.join(OUTPUT_DIR, sanitize_filename(name))
-    os.makedirs(output_dir, exist_ok=True)
+        name = get_video_name(video_url)
+        output_dir = os.path.join(OUTPUT_DIR, sanitize_filename(name))
+        os.makedirs(output_dir, exist_ok=True)
 
-    text = get_video_subtitles(video_url)
-    if not text:
-        raise RuntimeError(f"Failed to get subtitles from video {video_url}")
-    with open(os.path.join(output_dir, "text.md"), "w", encoding="utf-8") as file:
-        file.write(text + f"\n\nOriginal video: [**{name}**]({video_url})")
-    logger.info(f"Text saved to {output_dir}{os.sep}text.md")
+        text = get_video_subtitles(video_url)
+        if not text:
+            raise RuntimeError(f"Failed to get subtitles from video {video_url}")
+        with open(os.path.join(output_dir, "text.md"), "w", encoding="utf-8") as file:
+            file.write(text + f"\n\nOriginal video: [**{name}**]({video_url})")
+        logger.info(f"Text saved to {output_dir}{os.sep}text.md")
 
-    llm = Gemini()
-    summary = llm.ask_prompt(Prompt.SUMMARY, text)
-    adjusted_summary = summary + f"\n\nOriginal video: [**{name}**]({video_url})\n"
-    with open(os.path.join(output_dir, "summary.md"), "w", encoding="utf-8") as file:
-        file.write(adjusted_summary)
-    logger.info(f"Summary saved to {output_dir}{os.sep}summary.md")
+        llm = Gemini()
+        summary = llm.ask_prompt(Prompt.SUMMARY, text)
+        adjusted_summary = summary + f"\n\nOriginal video: [**{name}**]({video_url})\n"
+        with open(
+            os.path.join(output_dir, "summary.md"), "w", encoding="utf-8"
+        ) as file:
+            file.write(adjusted_summary)
+        logger.info(f"Summary saved to {output_dir}{os.sep}summary.md")
 
-    sys.stdout.write(adjusted_summary)
+        sys.stdout.write(adjusted_summary)
 
-except Exception as e:
-    logger.exception(e)
-    print(f"{e}", file=sys.stderr)
+    except Exception as e:
+        logger.exception(e)
+        print(f"{e}", file=sys.stderr)
+
+
+if __name__ == "__main__":
+    main()
