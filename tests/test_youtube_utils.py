@@ -1,5 +1,3 @@
-# tests/youtube/test_youtube_utils.py
-
 import pytest
 from ytsum.youtube.utils import get_raw_text_from_srt
 
