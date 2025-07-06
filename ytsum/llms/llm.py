@@ -1,37 +1,38 @@
-from logging import Logger
 from abc import ABC, abstractmethod
 from concurrent.futures import ThreadPoolExecutor
+from logging import Logger
 
-from ytsum.utils.prompts.prompt_factory import Prompt, get_prompt_generator
 from ytsum.llms.utils import chunk_text
+from ytsum.utils.prompts.prompt_factory import Prompt, get_prompt_generator
 
 
 class LLM(ABC):
     """Abstract base class for language models used in summarization workflows."""
 
     def __init__(self, logger: Logger):
-        """Initialize the LLM instance with a logger.
+        """
+        Initialize the LLM instance with a logger.
 
         Args:
             logger (Logger): Logger instance for capturing debug or runtime information.
         """
         self._logger = logger
 
-    def ask_prompt(self, prompt_type: Prompt, text: str, *args) -> str:
-        """Construct and submit a prompt to the language model.
+    def ask_prompt(self, prompt_type: Prompt, text: str) -> str:
+        """
+        Construct and submit a prompt to the language model.
 
         If the input text exceeds the token limit, it is split into chunks and processed in parallel.
 
         Args:
             prompt_type (Prompt): The type of prompt to generate.
             text (str): Input text to query the model with.
-            *args: Additional arguments for the prompt generator.
 
         Returns:
             str: The model's response to the prompt.
         """
         prompt_generator = get_prompt_generator(prompt_type)
-        prompt = prompt_generator(text, *args)
+        prompt = prompt_generator(text)
         total_tokens = self.get_token_count(text)
         self._logger.debug(f"Total token count: {total_tokens}, prompt: {prompt}")
 
@@ -50,19 +51,17 @@ class LLM(ABC):
 
         answers = []
         with ThreadPoolExecutor(max_workers=4) as executor:
-            futures = [
-                executor.submit(self.ask, prompt_generator(chunk, *args), 5, 30)
-                for chunk in chunks
-            ]
+            futures = [executor.submit(self.ask, prompt_generator(chunk), 5, 30) for chunk in chunks]
             for future in futures:
                 answers.append(future.result())
 
         combined_answers = "\n\n".join(answers)
-        return self.ask_prompt(prompt_type, combined_answers, *args)
+        return self.ask_prompt(prompt_type, combined_answers)
 
     @abstractmethod
     def ask(self, prompt: str, max_retries: int = 5, backoff_seconds: int = 30) -> str:
-        """Submit a prompt to the model and return its response.
+        """
+        Submit a prompt to the model and return its response.
 
         Args:
             prompt (str): The prompt to send to the model.
@@ -76,7 +75,8 @@ class LLM(ABC):
 
     @abstractmethod
     def get_token_count(self, text: str) -> int:
-        """Return the token count of a given string according to the model's tokenizer.
+        """
+        Return the token count of a given string according to the model's tokenizer.
 
         Args:
             text (str): The input text.
@@ -88,7 +88,8 @@ class LLM(ABC):
 
     @staticmethod
     def _estimate_token_count(text: str) -> int:
-        """Estimate the number of tokens using a heuristic.
+        """
+        Estimate the number of tokens using a heuristic.
 
         Args:
             text (str): The input text.
@@ -100,7 +101,8 @@ class LLM(ABC):
 
     @abstractmethod
     def get_token_limit(self) -> int:
-        """Return the maximum number of tokens the model can handle.
+        """
+        Return the maximum number of tokens the model can handle.
 
         Returns:
             int: Token limit for a single input.

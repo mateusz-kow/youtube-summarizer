@@ -1,7 +1,5 @@
 def generate_summary_prompt(text: str) -> str:
-    """
-    Generate a structured prompt for the summarization request.
-    """
+    """Generate a structured prompt for the summarization request."""
     return (
         "Rewrite the following transcription into a concise, coherent, "
         "and engaging narrative that preserves all key ideas, insights, and examples from the video. "
