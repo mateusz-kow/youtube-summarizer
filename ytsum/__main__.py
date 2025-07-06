@@ -10,6 +10,9 @@ from ytsum.utils.input_parser import get_args
 from ytsum.utils.prompts.prompt_factory import Prompt
 
 
+logger = logging.getLogger(__name__)
+
+
 def sanitize_filename(name: str, replacement: str = "") -> str:
     """
     Sanitizes a filename by removing characters not allowed in Windows, macOS, or Linux filesystems.
@@ -28,7 +31,25 @@ def sanitize_filename(name: str, replacement: str = "") -> str:
 
 
 def main() -> None:
-    logger = logging.getLogger(__name__)
+    """
+    Executes the end-to-end process of retrieving subtitles from a YouTube video,
+    saving the transcript, generating a summary using an LLM, and writing the output
+    to structured markdown files.
+
+    Workflow:
+        1. Parse the video URL from CLI arguments.
+        2. Retrieve the video title and sanitize it for filesystem safety.
+        3. Create an output directory using the sanitized title.
+        4. Fetch subtitles for the given video.
+        5. Save the full transcript as a markdown file.
+        6. Generate a summary of the transcript using the Gemini LLM.
+        7. Save the summary as a markdown file.
+        8. Output the summary to standard output.
+
+    Raises:
+        RuntimeError: If subtitles cannot be retrieved.
+        Exception: For any unexpected error during processing.
+    """
     logger.info(f"Starting {APP_NAME}")
 
     try:

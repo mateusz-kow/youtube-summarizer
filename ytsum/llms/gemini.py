@@ -11,9 +11,20 @@ logger = logging.getLogger(__name__)
 
 
 class Gemini(LLM):
+    """Implementation of the LLM interface using Google Gemini language model.
+
+    This class manages interactions with the Gemini API including
+    token counting, request retries on quota exhaustion, and response handling.
+    """
+
     def __init__(
         self, max_tokens: int = int(os.getenv("GOOGLE_LLM_MAX_INPUT_TOKENS", 6000))
     ):
+        """Initialize Gemini LLM client with max token limit and model configuration.
+
+        Args:
+            max_tokens (int, optional): Maximum tokens allowed per prompt. Defaults to 6000 or environment variable.
+        """
         super().__init__(logger)
         self._max_tokens = max_tokens
         self._client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
@@ -21,6 +32,20 @@ class Gemini(LLM):
         logger.info(f"Gemini initialized with max token limit: {self._max_tokens}")
 
     def ask(self, prompt: str, max_retries: int = 5, backoff_seconds: int = 30) -> str:
+        """Send prompt to Gemini model and retrieve response with retry on quota errors.
+
+        Args:
+            prompt (str): The input prompt string.
+            max_retries (int, optional): Maximum retry attempts on quota exhaustion. Defaults to 5.
+            backoff_seconds (int, optional): Wait time between retries in seconds. Defaults to 30.
+
+        Raises:
+            RuntimeError: If all retry attempts fail due to quota exhaustion.
+            Exception: On unexpected API errors.
+
+        Returns:
+            str: The model's response text.
+        """
         tokens = self.get_token_count(prompt)
         logger.debug(f"Calling Gemini with prompt: {prompt} and tokens {tokens}")
 
@@ -49,9 +74,15 @@ class Gemini(LLM):
         )
 
     def get_token_count(self, text: str) -> int:
-        """
-        Approximate token count for the provided text using the model's token counting API.
-        Falls back to a rough estimate if the API call fails.
+        """Return the number of tokens in the input text, using Gemini token counting API.
+
+        Falls back to a heuristic estimate if the API call fails.
+
+        Args:
+            text (str): Input text to count tokens for.
+
+        Returns:
+            int: Number of tokens counted or estimated.
         """
         if not text:
             return 0
@@ -67,7 +98,9 @@ class Gemini(LLM):
             return self._estimate_token_count(text)
 
     def get_token_limit(self) -> int:
-        """
-        Returns the maximum allowed tokens for input prompt.
+        """Return the maximum number of tokens allowed per input prompt.
+
+        Returns:
+            int: Maximum token limit configured for Gemini client.
         """
         return self._max_tokens
