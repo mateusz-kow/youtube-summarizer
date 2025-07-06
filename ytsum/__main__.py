@@ -80,9 +80,9 @@ def main() -> None:
         print("Process interrupted by user.", file=sys.stderr)
     except RuntimeError as e:
         logger.error(f"Runtime error: {e}")
-        print(f"Error: {e}", file=sys.stderr)
+        print(e, file=sys.stderr)
     except Exception as e:
-        logger.exception(f"An error occurred during execution {e}")
+        logger.exception(f"An unknown error occurred during execution: {e}")
         print(e, file=sys.stderr)
 
 
