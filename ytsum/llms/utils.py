@@ -1,8 +1,9 @@
-from typing import Callable
 import logging
-from nltk.tokenize import sent_tokenize
 import subprocess
 import sys
+from typing import Callable
+
+from nltk.tokenize import sent_tokenize
 
 
 def silent_nltk_download(resource_name):
@@ -15,7 +16,6 @@ def silent_nltk_download(resource_name):
     Args:
         resource_name (str): The name of the NLTK resource to download.
     """
-
     subprocess.run(
         [sys.executable, "-c", f"import nltk; nltk.download('{resource_name}')"],
         stdout=subprocess.DEVNULL,

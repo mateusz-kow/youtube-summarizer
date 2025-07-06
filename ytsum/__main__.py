@@ -4,11 +4,10 @@ import sys
 
 from ytsum.config import APP_NAME
 from ytsum.llms.gemini import Gemini
-from ytsum.utils.logging_config import configure_logging
-from ytsum.youtube.youtube_manager import get_video_subtitles, get_video_name
 from ytsum.utils.input_parser import get_args
+from ytsum.utils.logging_config import configure_logging
 from ytsum.utils.prompts.prompt_factory import Prompt
-
+from ytsum.youtube.youtube_manager import get_video_name, get_video_subtitles
 
 logger = logging.getLogger(__name__)
 
@@ -50,7 +49,6 @@ def main() -> None:
         RuntimeError: If subtitles cannot be retrieved.
         Exception: For any unexpected error during processing.
     """
-
     try:
         args = get_args()
         configure_logging(args.verbose)

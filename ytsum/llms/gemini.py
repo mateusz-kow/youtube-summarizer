@@ -11,7 +11,8 @@ logger = logging.getLogger(__name__)
 
 
 class Gemini(LLM):
-    """Implementation of the LLM interface using Google Gemini language model.
+    """
+    Implementation of the LLM interface using Google Gemini language model.
 
     This class manages interactions with the Gemini API including
     token counting, request retries on quota exhaustion, and response handling.
@@ -20,7 +21,8 @@ class Gemini(LLM):
     def __init__(
         self, max_tokens: int = int(os.getenv("GOOGLE_LLM_MAX_INPUT_TOKENS", 6000))
     ):
-        """Initialize Gemini LLM client with max token limit and model configuration.
+        """
+        Initialize Gemini LLM client with max token limit and model configuration.
 
         Args:
             max_tokens (int, optional): Maximum tokens allowed per prompt. Defaults to 6000 or environment variable.
@@ -32,7 +34,8 @@ class Gemini(LLM):
         logger.info(f"Gemini initialized with max token limit: {self._max_tokens}")
 
     def ask(self, prompt: str, max_retries: int = 5, backoff_seconds: int = 30) -> str:
-        """Send prompt to Gemini model and retrieve response with retry on quota errors.
+        """
+        Send prompt to Gemini model and retrieve response with retry on quota errors.
 
         Args:
             prompt (str): The input prompt string.
@@ -74,7 +77,8 @@ class Gemini(LLM):
         )
 
     def get_token_count(self, text: str) -> int:
-        """Return the number of tokens in the input text, using Gemini token counting API.
+        """
+        Return the number of tokens in the input text, using Gemini token counting API.
 
         Falls back to a heuristic estimate if the API call fails.
 
@@ -98,7 +102,8 @@ class Gemini(LLM):
             return self._estimate_token_count(text)
 
     def get_token_limit(self) -> int:
-        """Return the maximum number of tokens allowed per input prompt.
+        """
+        Return the maximum number of tokens allowed per input prompt.
 
         Returns:
             int: Maximum token limit configured for Gemini client.

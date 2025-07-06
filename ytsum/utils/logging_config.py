@@ -1,8 +1,7 @@
+import logging
+import os
 import sys
 from datetime import datetime
-
-import os
-import logging
 
 from ytsum.config import LOG_DIR
 
@@ -28,7 +27,6 @@ def configure_logging(verbose: bool = False) -> None:
     Returns:
         None
     """
-
     # Common formatter for file logs
     file_formatter = logging.Formatter(
         fmt="%(asctime)s | %(levelname)s | %(message)s", datefmt="%Y-%m-%d %H:%M:%S"

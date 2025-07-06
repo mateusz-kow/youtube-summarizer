@@ -1,6 +1,4 @@
-"""
-Prompt factory module for mapping prompt types to their respective generator functions.
-"""
+"""Prompt factory module for mapping prompt types to their respective generator functions."""
 
 from enum import IntEnum, auto
 from typing import Callable
@@ -9,9 +7,7 @@ from ytsum.utils.prompts.prompt_generators import generate_summary_prompt
 
 
 class Prompt(IntEnum):
-    """
-    Enumeration of supported prompt types.
-    """
+    """Enumeration of supported prompt types."""
 
     SUMMARY = auto()
 
@@ -37,4 +33,4 @@ def get_prompt_generator(prompt: Prompt) -> Callable:
     try:
         return PROMPT_TO_GENERATOR[prompt]
     except KeyError:
-        raise NotImplementedError(f"Prompt {prompt} not implemented")
+        raise NotImplementedError(f"Prompt {prompt} not implemented") from None

@@ -1,4 +1,5 @@
 import os.path
+
 from dotenv import load_dotenv
 from platformdirs import user_data_dir, user_log_dir
 
@@ -12,8 +13,9 @@ LOG_DIR = user_log_dir(APP_NAME, AUTHOR)
 OUTPUT_DIR = os.path.join(APP_DIR, "Output")
 
 try:
-    from ytsum.local_config import *
-except ImportError as e:
+    # noqa: F403
+    from ytsum.local_config import *  # noqa: F403
+except ImportError:
     pass
 
 KEY_DIRS = (APP_DIR, OUTPUT_DIR, LOG_DIR)

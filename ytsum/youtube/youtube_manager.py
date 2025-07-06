@@ -1,10 +1,11 @@
-import yt_dlp
 import glob
-from ytsum.youtube.utils import get_raw_text_from_srt
+import logging
 import os
 import tempfile
-import logging
 
+import yt_dlp
+
+from ytsum.youtube.utils import get_raw_text_from_srt
 
 logger = logging.getLogger(__name__)
 
@@ -14,7 +15,6 @@ def get_video_subtitles(youtube_url: str) -> str | None:
     Downloads English subtitles or auto-generated English subtitles (including en variants like en-GB, en-US)
     from a YouTube video URL. Returns the subtitle content as a string, or None if no subtitles are available.
     """
-
     logger.info(f"Starting subtitle download for URL: {youtube_url}")
 
     with tempfile.TemporaryDirectory() as tmpdir:
@@ -59,7 +59,7 @@ def get_video_subtitles(youtube_url: str) -> str | None:
                     logger.info("No subtitles found.")
                     return None
 
-                with open(subs_file, "r", encoding="utf-8") as f:
+                with open(subs_file, encoding="utf-8") as f:
                     content = f.read()
                     logger.info(
                         f"Successfully read subtitles from {subs_file} (size: {len(content)} characters)."
@@ -75,6 +75,7 @@ def get_video_subtitles(youtube_url: str) -> str | None:
 def get_video_name(url: str) -> str:
     """
     Retrieves the title of a YouTube video without downloading the content.
+
     :param url: URL of the YouTube video
     :return: Title of the video as a string
     """

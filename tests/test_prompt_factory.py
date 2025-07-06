@@ -1,4 +1,5 @@
 import pytest
+
 from ytsum.utils.prompts.prompt_factory import Prompt, get_prompt_generator
 from ytsum.utils.prompts.prompt_generators import generate_summary_prompt
 

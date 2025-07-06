@@ -1,6 +1,5 @@
 import argparse
 import logging
-from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +17,6 @@ def get_args():
     Raises:
         argparse.ArgumentTypeError: If the provided paths are invalid or do not meet requirements.
     """
-
     parser = argparse.ArgumentParser(
         description="YouTube Summarizer CLI - Summarize YouTube videos from input files or directories."
     )

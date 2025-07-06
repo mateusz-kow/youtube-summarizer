@@ -28,7 +28,7 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.ruff]
-line-length = 88
+line-length = 120
 # Expand selected rules to cover more real-world issues
 lint.select = [
     "E",    # pycodestyle errors
@@ -39,19 +39,26 @@ lint.select = [
     "UP",   # pyupgrade (modern syntax suggestions)
 ]
 lint.ignore = [
-    "D100",  # Missing docstring in public module (optional)
-    "D104",  # Missing docstring in public package (optional)
+    "D100",
+    "D104",
+    "D415",
+    "D401",
+    "D400",
+    "D212",
+    "D205",
+    "D413",
+    "D203"
+
 ]
-# Optionally: enable fix mode for autofixes on save with an editor
-# fix = true
+fix = true
 
 [tool.black]
 line-length = 120
-target-version = ["py39"]  # or py310 / py311, depending on your target
+target-version = ["py311"]
 
 [tool.mypy]
 ignore_missing_imports = true
-strict = true  # Enable strict mode for better type safety
+strict = true
 disallow_untyped_defs = true
 warn_unused_ignores = true
 warn_return_any = true
