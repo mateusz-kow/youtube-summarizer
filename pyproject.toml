@@ -2,7 +2,7 @@
 name = "youtube-summarizer"
 version = "0.2.0"
 description = "Generate an AI-powered summary of a YouTube video using its subtitles."
-authors = ["mateusz_kow ytsum+kowalski.mateusz.1lo1@gmail.com"]
+authors = ["mateusz_kow <ytsum+kowalski.mateusz.1lo1@gmail.com>"]
 readme = "README.md"
 packages = [{include = "ytsum"}]
 
@@ -69,4 +69,4 @@ show_error_codes = true
 [tool.isort]
 profile = "black"
 line_length = 120
-known_first_party = ["ytsum"]  # change to your actual module name
+known_first_party = ["ytsum"]
