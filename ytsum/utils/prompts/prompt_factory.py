@@ -12,12 +12,12 @@ class Prompt(IntEnum):
     SUMMARY = auto()
 
 
-PROMPT_TO_GENERATOR: dict[Prompt, Callable] = {
+PROMPT_TO_GENERATOR: dict[Prompt, Callable[[str], str]] = {
     Prompt.SUMMARY: generate_summary_prompt,
 }
 
 
-def get_prompt_generator(prompt: Prompt) -> Callable:
+def get_prompt_generator(prompt: Prompt) -> Callable[[str], str]:
     """
     Retrieves the generator function associated with a given prompt type.
 

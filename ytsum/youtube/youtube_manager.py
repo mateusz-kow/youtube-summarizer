@@ -80,13 +80,13 @@ def get_video_name(url: str) -> str:
     class QuietLogger:
         """Custom logger to suppress yt-dlp output."""
 
-        def debug(self, msg):
+        def debug(self, msg: str) -> None:
             pass
 
-        def warning(self, msg):
+        def warning(self, msg: str) -> None:
             pass
 
-        def error(self, msg):
+        def error(self, msg: str) -> None:
             pass
 
     ydl_opts = {
@@ -106,6 +106,6 @@ def get_video_name(url: str) -> str:
             if not title:
                 raise ValueError(f"No title found in video metadata for URL: {url}")
             logger.info(f"Retrieved video title: {title}")
-            return title
+            return str(title)
     except Exception as e:
         raise RuntimeError(f"Error fetching video title for {url}: {e}") from e

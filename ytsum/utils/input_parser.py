@@ -4,7 +4,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def get_args():
+def get_args() -> argparse.Namespace:
     """
     Parse and validate command-line arguments for the summarization CLI.
 

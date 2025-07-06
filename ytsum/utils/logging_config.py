@@ -35,16 +35,16 @@ def configure_logging(verbose: bool = False) -> None:
     file_handler.setLevel(logging.DEBUG)
     file_handler.setFormatter(file_formatter)
 
-    handlers = [file_handler]
+    handlers: list[logging.Handler] = [file_handler]
 
     if verbose:
 
         class InfoFilter(logging.Filter):
             """Logging filter that only allows INFO level log records."""
 
-            def filter(self, record):
+            def filter(self, record: logging.LogRecord) -> bool:
                 """Return True only if the log record level is INFO."""
-                return record.levelno == logging.INFO
+                return bool(record.levelno == logging.INFO)
 
         # Console handler logs only INFO level to stdout with simple message formatting
         console_handler = logging.StreamHandler(sys.stdout)

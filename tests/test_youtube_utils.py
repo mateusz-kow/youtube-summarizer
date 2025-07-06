@@ -18,6 +18,6 @@ SRT_WITH_ANNOTATIONS = "1\n00:00:10,000 --> 00:00:12,000\n[music] Let's begin. [
         ("Malformed text", ""),
     ],
 )
-def test_get_raw_text_from_srt(srt_input, expected_output):
+def test_get_raw_text_from_srt(srt_input: str, expected_output: str) -> None:
     """Parses SRT to raw text."""
     assert get_raw_text_from_srt(srt_input) == expected_output

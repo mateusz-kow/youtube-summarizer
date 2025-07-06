@@ -18,7 +18,7 @@ class LLM(ABC):
         """
         self._logger = logger
 
-    def ask_prompt(self, prompt_type: Prompt, text: str, *args) -> str:
+    def ask_prompt(self, prompt_type: Prompt, text: str) -> str:
         """
         Construct and submit a prompt to the language model.
 
@@ -27,13 +27,12 @@ class LLM(ABC):
         Args:
             prompt_type (Prompt): The type of prompt to generate.
             text (str): Input text to query the model with.
-            *args: Additional arguments for the prompt generator.
 
         Returns:
             str: The model's response to the prompt.
         """
         prompt_generator = get_prompt_generator(prompt_type)
-        prompt = prompt_generator(text, *args)
+        prompt = prompt_generator(text)
         total_tokens = self.get_token_count(text)
         self._logger.debug(f"Total token count: {total_tokens}, prompt: {prompt}")
 
@@ -52,12 +51,12 @@ class LLM(ABC):
 
         answers = []
         with ThreadPoolExecutor(max_workers=4) as executor:
-            futures = [executor.submit(self.ask, prompt_generator(chunk, *args), 5, 30) for chunk in chunks]
+            futures = [executor.submit(self.ask, prompt_generator(chunk), 5, 30) for chunk in chunks]
             for future in futures:
                 answers.append(future.result())
 
         combined_answers = "\n\n".join(answers)
-        return self.ask_prompt(prompt_type, combined_answers, *args)
+        return self.ask_prompt(prompt_type, combined_answers)
 
     @abstractmethod
     def ask(self, prompt: str, max_retries: int = 5, backoff_seconds: int = 30) -> str:

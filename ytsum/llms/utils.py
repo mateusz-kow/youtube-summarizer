@@ -6,7 +6,7 @@ from typing import Callable
 from nltk.tokenize import sent_tokenize
 
 
-def silent_nltk_download(resource_name):
+def silent_nltk_download(resource_name: str) -> None:
     """
     Silently download an NLTK resource without printing to stdout or stderr.
 
@@ -30,10 +30,10 @@ logger = logging.getLogger(__name__)
 def chunk_text(
     *,
     text: str,
-    get_token_count: Callable,
+    get_token_count: Callable[[str], int],
     max_tokens: int,
-    generate_prompt: Callable,
-    estimate_token_count: Callable,
+    generate_prompt: Callable[[str], str],
+    estimate_token_count: Callable[[str], int],
 ) -> list[str]:
     """
     Splits text into chunks using nltk sentence tokenizer,
