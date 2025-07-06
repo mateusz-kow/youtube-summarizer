@@ -1,9 +1,29 @@
 from typing import Callable
 import logging
-import nltk
 from nltk.tokenize import sent_tokenize
+import subprocess
+import sys
 
-nltk.download("punkt_tab")
+
+def silent_nltk_download(resource_name):
+    """
+    Silently download an NLTK resource without printing to stdout or stderr.
+
+    This function runs a separate Python subprocess to download the specified
+    NLTK resource, while suppressing any output generated during the download.
+
+    Args:
+        resource_name (str): The name of the NLTK resource to download.
+    """
+
+    subprocess.run(
+        [sys.executable, "-c", f"import nltk; nltk.download('{resource_name}')"],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+
+
+silent_nltk_download("punkt_tab")
 logger = logging.getLogger(__name__)
 
 

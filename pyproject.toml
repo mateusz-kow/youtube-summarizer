@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "youtube-summarizer"
-version = "0.1.0"
+version = "0.2.0"
 description = "Generate an AI-powered summary of a YouTube video using its subtitles."
 authors = ["mateusz_kow ytsum+kowalski.mateusz.1lo1@gmail.com"]
 readme = "README.md"
@@ -29,10 +29,37 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.ruff]
 line-length = 88
-lint.select = ["D101", "D102", "D103", "D105", "D106"]
+# Expand selected rules to cover more real-world issues
+lint.select = [
+    "E",    # pycodestyle errors
+    "F",    # pyflakes
+    "I",    # isort (import sorting)
+    "D",    # pydocstyle (docstring checks)
+    "B",    # bugbear (best practices)
+    "UP",   # pyupgrade (modern syntax suggestions)
+]
+lint.ignore = [
+    "D100",  # Missing docstring in public module (optional)
+    "D104",  # Missing docstring in public package (optional)
+]
+# Optionally: enable fix mode for autofixes on save with an editor
+# fix = true
 
 [tool.black]
-line-length = 88
+line-length = 120
+target-version = ["py39"]  # or py310 / py311, depending on your target
 
 [tool.mypy]
 ignore_missing_imports = true
+strict = true  # Enable strict mode for better type safety
+disallow_untyped_defs = true
+warn_unused_ignores = true
+warn_return_any = true
+check_untyped_defs = true
+no_implicit_optional = true
+show_error_codes = true
+
+[tool.isort]
+profile = "black"
+line_length = 120
+known_first_party = ["ytsum"]  # change to your actual module name

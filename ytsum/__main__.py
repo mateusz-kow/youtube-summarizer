@@ -1,10 +1,10 @@
 import logging
-import os
 import re
 import sys
 
-from ytsum import APP_NAME, OUTPUT_DIR
+from ytsum.config import APP_NAME
 from ytsum.llms.gemini import Gemini
+from ytsum.utils.logging_config import configure_logging
 from ytsum.youtube.youtube_manager import get_video_subtitles, get_video_name
 from ytsum.utils.input_parser import get_args
 from ytsum.utils.prompts.prompt_factory import Prompt
@@ -50,24 +50,22 @@ def main() -> None:
         RuntimeError: If subtitles cannot be retrieved.
         Exception: For any unexpected error during processing.
     """
-    logger.info(f"Starting {APP_NAME}")
 
     try:
-        video_url = get_args()
+        args = get_args()
+        configure_logging(args.verbose)
+        video_url = args.url
+        output_file = args.output_file
+
+        logger.info(f"Starting application: {APP_NAME}")
+        logger.debug(f"Video URL: {video_url}")
+        logger.debug(f"Output file: {output_file}")
 
         video_title = get_video_name(video_url)
-        safe_title = sanitize_filename(video_title)
-        output_dir = os.path.join(OUTPUT_DIR, safe_title)
-        os.makedirs(output_dir, exist_ok=True)
 
         subtitles = get_video_subtitles(video_url)
         if not subtitles:
             raise RuntimeError(f"Failed to retrieve subtitles from video: {video_url}")
-
-        text_path = os.path.join(output_dir, "text.md")
-        with open(text_path, "w", encoding="utf-8") as f:
-            f.write(subtitles + f"\n\nOriginal video: [**{video_title}**]({video_url})")
-        logger.info(f"Transcript saved to: {text_path}")
 
         llm = Gemini()
         summary = llm.ask_prompt(Prompt.SUMMARY, subtitles)
@@ -75,16 +73,21 @@ def main() -> None:
             summary + f"\n\nOriginal video: [**{video_title}**]({video_url})\n"
         )
 
-        summary_path = os.path.join(output_dir, "summary.md")
-        with open(summary_path, "w", encoding="utf-8") as f:
-            f.write(summary_text)
-        logger.info(f"Summary saved to: {summary_path}")
-
-        sys.stdout.write(summary_text)
-
-    except Exception as e:
-        logger.exception("An error occurred during execution.")
+        if output_file:
+            with open(output_file, "w", encoding="utf-8") as f:
+                f.write(summary_text)
+            logger.info(f"Summary saved to: {output_file}")
+        else:
+            sys.stdout.write(summary_text)
+    except KeyboardInterrupt:
+        logger.warning("Process interrupted by user.")
+        print("Process interrupted by user.", file=sys.stderr)
+    except RuntimeError as e:
+        logger.error(f"Runtime error: {e}")
         print(f"Error: {e}", file=sys.stderr)
+    except Exception as e:
+        logger.exception(f"An error occurred during execution {e}")
+        print(e, file=sys.stderr)
 
 
 if __name__ == "__main__":
