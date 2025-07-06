@@ -1,5 +1,4 @@
 import logging
-import re
 import sys
 
 from ytsum.config import APP_NAME
@@ -12,38 +11,17 @@ from ytsum.youtube.youtube_manager import get_video_name, get_video_subtitles
 logger = logging.getLogger(__name__)
 
 
-def sanitize_filename(name: str, replacement: str = "") -> str:
-    """
-    Sanitizes a filename by removing characters not allowed in Windows, macOS, or Linux filesystems.
-
-    Args:
-        name (str): Proposed filename.
-        replacement (str): Character to replace forbidden characters with (default: empty string).
-
-    Returns:
-        str: A sanitized, filesystem-safe filename.
-    """
-    forbidden_chars = r'[<>:"/\\|?*\x00-\x1F]'
-    sanitized = re.sub(forbidden_chars, replacement, name)
-    sanitized = sanitized.strip(" .")
-    return sanitized[:255]
-
-
 def main() -> None:
     """
     Executes the end-to-end process of retrieving subtitles from a YouTube video,
-    saving the transcript, generating a summary using an LLM, and writing the output
-    to structured markdown files.
+    generating a summary using an LLM, and writing the result to a file or standard output.
 
     Workflow:
-        1. Parse the video URL from CLI arguments.
-        2. Retrieve the video title and sanitize it for filesystem safety.
-        3. Create an output directory using the sanitized title.
-        4. Fetch subtitles for the given video.
-        5. Save the full transcript as a markdown file.
-        6. Generate a summary of the transcript using the Gemini LLM.
-        7. Save the summary as a markdown file.
-        8. Output the summary to standard output.
+        1. Parse CLI arguments including video URL and output file path.
+        2. Retrieve the title of the YouTube video.
+        3. Fetch subtitles for the given video.
+        4. Generate a summary using the Gemini LLM based on the transcript.
+        5. Write the summary to the specified output file or print to stdout.
 
     Raises:
         RuntimeError: If subtitles cannot be retrieved.
@@ -78,12 +56,15 @@ def main() -> None:
     except KeyboardInterrupt:
         logger.warning("Process interrupted by user.")
         print("Process interrupted by user.", file=sys.stderr)
+        sys.exit(1)
     except RuntimeError as e:
         logger.error(f"Runtime error: {e}")
-        print(f"Error: {e}", file=sys.stderr)
-    except Exception as e:
-        logger.exception(f"An error occurred during execution {e}")
         print(e, file=sys.stderr)
+        sys.exit(1)
+    except Exception as e:
+        logger.exception(f"An unknown error occurred during execution: {e}")
+        print(e, file=sys.stderr)
+        sys.exit(2)
 
 
 if __name__ == "__main__":
