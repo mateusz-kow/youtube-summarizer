@@ -27,21 +27,24 @@ file_formatter = logging.Formatter(
     fmt="%(asctime)s | %(levelname)s | %(message)s", datefmt="%Y-%m-%d %H:%M:%S"
 )
 
-# File handler
+# File handler logs DEBUG and above to the log file
 file_handler = logging.FileHandler(LOG_PATH, encoding="utf-8", mode="a")
-file_handler.setLevel(logging.DEBUG)  # File handler logs DEBUG and above
+file_handler.setLevel(logging.DEBUG)
 file_handler.setFormatter(file_formatter)
 
 
-# Console handler with a custom filter
 class InfoFilter(logging.Filter):
+    """Logging filter that only allows INFO level log records."""
+
     def filter(self, record):
+        """Return True only if the log record level is INFO."""
         return record.levelno == logging.INFO
 
 
+# Console handler logs only INFO level to stdout with simple message formatting
 console_handler = logging.StreamHandler(sys.stdout)
-console_handler.setLevel(logging.INFO)  # Console handler logs INFO and above
-console_handler.addFilter(InfoFilter())  # Only allow INFO level logs
+console_handler.setLevel(logging.INFO)
+console_handler.addFilter(InfoFilter())
 console_handler.setFormatter(logging.Formatter(fmt="%(message)s"))
 
 logging.basicConfig(

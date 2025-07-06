@@ -1,4 +1,6 @@
 import logging
+import os
+import re
 import sys
 
 from ytsum import APP_NAME, OUTPUT_DIR
@@ -7,56 +9,82 @@ from ytsum.youtube.youtube_manager import get_video_subtitles, get_video_name
 from ytsum.utils.input_parser import get_args
 from ytsum.utils.prompts.prompt_factory import Prompt
 
-import re
-import os
+
+logger = logging.getLogger(__name__)
 
 
 def sanitize_filename(name: str, replacement: str = "") -> str:
     """
-    Sanityzuje nazwę pliku, usuwając niedozwolone znaki dla systemów Windows, macOS, Linux.
-    :param name: Proponowana nazwa pliku
-    :param replacement: Znak, którym zastąpić niedozwolone znaki
-    :return: Poprawna, bezpieczna nazwa pliku
+    Sanitizes a filename by removing characters not allowed in Windows, macOS, or Linux filesystems.
+
+    Args:
+        name (str): Proposed filename.
+        replacement (str): Character to replace forbidden characters with (default: empty string).
+
+    Returns:
+        str: A sanitized, filesystem-safe filename.
     """
     forbidden_chars = r'[<>:"/\\|?*\x00-\x1F]'
-    name = re.sub(forbidden_chars, replacement, name)
-    name = name.strip(" .")
-
-    return name[:255]
+    sanitized = re.sub(forbidden_chars, replacement, name)
+    sanitized = sanitized.strip(" .")
+    return sanitized[:255]
 
 
 def main() -> None:
-    logger = logging.getLogger(__name__)
+    """
+    Executes the end-to-end process of retrieving subtitles from a YouTube video,
+    saving the transcript, generating a summary using an LLM, and writing the output
+    to structured markdown files.
+
+    Workflow:
+        1. Parse the video URL from CLI arguments.
+        2. Retrieve the video title and sanitize it for filesystem safety.
+        3. Create an output directory using the sanitized title.
+        4. Fetch subtitles for the given video.
+        5. Save the full transcript as a markdown file.
+        6. Generate a summary of the transcript using the Gemini LLM.
+        7. Save the summary as a markdown file.
+        8. Output the summary to standard output.
+
+    Raises:
+        RuntimeError: If subtitles cannot be retrieved.
+        Exception: For any unexpected error during processing.
+    """
     logger.info(f"Starting {APP_NAME}")
 
     try:
         video_url = get_args()
 
-        name = get_video_name(video_url)
-        output_dir = os.path.join(OUTPUT_DIR, sanitize_filename(name))
+        video_title = get_video_name(video_url)
+        safe_title = sanitize_filename(video_title)
+        output_dir = os.path.join(OUTPUT_DIR, safe_title)
         os.makedirs(output_dir, exist_ok=True)
 
-        text = get_video_subtitles(video_url)
-        if not text:
-            raise RuntimeError(f"Failed to get subtitles from video {video_url}")
-        with open(os.path.join(output_dir, "text.md"), "w", encoding="utf-8") as file:
-            file.write(text + f"\n\nOriginal video: [**{name}**]({video_url})")
-        logger.info(f"Text saved to {output_dir}{os.sep}text.md")
+        subtitles = get_video_subtitles(video_url)
+        if not subtitles:
+            raise RuntimeError(f"Failed to retrieve subtitles from video: {video_url}")
+
+        text_path = os.path.join(output_dir, "text.md")
+        with open(text_path, "w", encoding="utf-8") as f:
+            f.write(subtitles + f"\n\nOriginal video: [**{video_title}**]({video_url})")
+        logger.info(f"Transcript saved to: {text_path}")
 
         llm = Gemini()
-        summary = llm.ask_prompt(Prompt.SUMMARY, text)
-        adjusted_summary = summary + f"\n\nOriginal video: [**{name}**]({video_url})\n"
-        with open(
-            os.path.join(output_dir, "summary.md"), "w", encoding="utf-8"
-        ) as file:
-            file.write(adjusted_summary)
-        logger.info(f"Summary saved to {output_dir}{os.sep}summary.md")
+        summary = llm.ask_prompt(Prompt.SUMMARY, subtitles)
+        summary_text = (
+            summary + f"\n\nOriginal video: [**{video_title}**]({video_url})\n"
+        )
 
-        sys.stdout.write(adjusted_summary)
+        summary_path = os.path.join(output_dir, "summary.md")
+        with open(summary_path, "w", encoding="utf-8") as f:
+            f.write(summary_text)
+        logger.info(f"Summary saved to: {summary_path}")
+
+        sys.stdout.write(summary_text)
 
     except Exception as e:
-        logger.exception(e)
-        print(f"{e}", file=sys.stderr)
+        logger.exception("An error occurred during execution.")
+        print(f"Error: {e}", file=sys.stderr)
 
 
 if __name__ == "__main__":
