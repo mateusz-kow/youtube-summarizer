@@ -28,9 +28,7 @@ def configure_logging(verbose: bool = False) -> None:
         None
     """
     # Common formatter for file logs
-    file_formatter = logging.Formatter(
-        fmt="%(asctime)s | %(levelname)s | %(message)s", datefmt="%Y-%m-%d %H:%M:%S"
-    )
+    file_formatter = logging.Formatter(fmt="%(asctime)s | %(levelname)s | %(message)s", datefmt="%Y-%m-%d %H:%M:%S")
 
     # File handler logs DEBUG and above to the log file
     file_handler = logging.FileHandler(LOG_PATH, encoding="utf-8", mode="a")

@@ -52,10 +52,7 @@ class LLM(ABC):
 
         answers = []
         with ThreadPoolExecutor(max_workers=4) as executor:
-            futures = [
-                executor.submit(self.ask, prompt_generator(chunk, *args), 5, 30)
-                for chunk in chunks
-            ]
+            futures = [executor.submit(self.ask, prompt_generator(chunk, *args), 5, 30) for chunk in chunks]
             for future in futures:
                 answers.append(future.result())
 

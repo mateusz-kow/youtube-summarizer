@@ -67,9 +67,7 @@ def main() -> None:
 
         llm = Gemini()
         summary = llm.ask_prompt(Prompt.SUMMARY, subtitles)
-        summary_text = (
-            summary + f"\n\nOriginal video: [**{video_title}**]({video_url})\n"
-        )
+        summary_text = summary + f"\n\nOriginal video: [**{video_title}**]({video_url})\n"
 
         if output_file:
             with open(output_file, "w", encoding="utf-8") as f:

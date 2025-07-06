@@ -72,9 +72,7 @@ def chunk_text(
     if current_chunk_sentences:
         initial_chunks.append(" ".join(current_chunk_sentences).strip())
 
-    logger.info(
-        f"Initial split created {len(initial_chunks)} chunks using estimation. Now verifying..."
-    )
+    logger.info(f"Initial split created {len(initial_chunks)} chunks using estimation. Now verifying...")
 
     final_chunks = []
     oversized_chunks_count = 0
@@ -105,8 +103,6 @@ def chunk_text(
             f"Final chunk count: {len(final_chunks)}."
         )
     else:
-        logger.info(
-            "Verification complete. All estimated chunks were within the token limit."
-        )
+        logger.info("Verification complete. All estimated chunks were within the token limit.")
 
     return final_chunks

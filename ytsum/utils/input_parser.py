@@ -38,9 +38,7 @@ def get_args():
         help="Path to output directory where summaries will be saved.",
     )
 
-    parser.add_argument(
-        "-v", "--verbose", action="store_true", help="Enable verbose logging output."
-    )
+    parser.add_argument("-v", "--verbose", action="store_true", help="Enable verbose logging output.")
 
     args = parser.parse_args()
     return args
